@@ -1,0 +1,6 @@
+{
+  "name": "iOS 9 IPTV App",
+  "description": "Een single-file HTML5/ES5 WebKit IPTV player voor Xtream Codes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
