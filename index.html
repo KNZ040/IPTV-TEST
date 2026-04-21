@@ -277,8 +277,20 @@
     var xtreamUser = "";
     var xtreamPass = "";
 
-    // Simpele XHR Helper Functie - NU DIRECT, ZONDER PROXY
+    // Simpele XHR Helper Functie
     function ajaxRequest(url, onSuccess, onError) {
+      // PROXY FIX VOOR GITHUB PAGES (HTTPS MIXED CONTENT)
+      // Als we op een HTTPS site zitten (GitHub) en de link is HTTP, blokkeert de browser alles.
+      // We gebruiken een gratis, third-party veilige CORS proxy speciaal voor de JSON requests.
+      var isHttpsEnv = (window.location.protocol === 'https:');
+      var isHttpTarget = (url.indexOf('http://') === 0);
+      var finalUrl = url;
+      
+      // Gebruik proxy alleen als het echt nodig is via allorigins.win (geeft pure JSON terug)
+      if (isHttpsEnv && isHttpTarget) {
+         finalUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+      }
+
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
@@ -296,11 +308,11 @@
       };
 
       xhr.onerror = function() {
-        onError("Verbindingsfout (Status 0). Adblocker of firewall actief?");
+        onError("Verbindingsfout (Status 0). Dit is een Mixed-Content of CORS blokkade. Probeer evt een andere proxy.");
       };
       
       try {
-        xhr.open("GET", url, true);
+        xhr.open("GET", finalUrl, true);
         xhr.send();
       } catch (err) {
         onError("Kan aanvraag niet verzenden. Fout: " + err.message);
